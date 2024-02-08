@@ -3,6 +3,8 @@
 import re
 from typing import List
 import logging
+import sys
+import os
 
 PII_FIELDS = ("email", "ssn", "password", "credit_card", "phone_number")
 
