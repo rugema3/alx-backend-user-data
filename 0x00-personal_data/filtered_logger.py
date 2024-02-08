@@ -5,6 +5,7 @@ from typing import List
 import logging
 import sys
 import os
+import mysql.connector
 
 PII_FIELDS = ("email", "ssn", "password", "credit_card", "phone_number")
 
@@ -58,3 +59,27 @@ def get_logger() -> logging.Logger:
     logger.addHandler(stream_handler)
 
     return logger
+
+
+def get_db() mysql.connector.connection.MySQLConnection:
+    """
+    Return a connector to the secure holberton database.
+
+    Returns:
+    mysql.connector.connection.MySQLConnection: A connection to the database.
+    """
+    # Get database credentials from environment variables
+    username = os.environ.get('PERSONAL_DATA_DB_USERNAME', 'root')
+    password = os.environ.get('PERSONAL_DATA_DB_PASSWORD', '')
+    host = os.environ.get('PERSONAL_DATA_DB_HOST', 'localhost')
+    dbname = os.environ.get('PERSONAL_DATA_DB_NAME')
+
+    # Establish connection to the database
+    conn = mysql.connector.connect(
+        user=username,
+        password=password,
+        host=host,
+        database=dbname
+    )
+
+    return conn
