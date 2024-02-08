@@ -5,6 +5,6 @@ from typing import List
 
 
 def filter_datum(
-        fields: List[str], redaction: str, message: str, separator: str) -> str:
+        fields: List, redaction: str, message: str, separator: str) -> str:
     """Obfuscate specific fields in a log message."""
     return re.sub('|'.join(map(re.escape, fields)), redaction, message)
