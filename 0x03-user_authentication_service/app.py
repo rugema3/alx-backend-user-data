@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Flask Application."""
-from flask import Flask, jsonify, request, abort, make_response
+from flask import Flask, jsonify, request, abort, make_response, redirect
 from auth import Auth
 
 
@@ -74,6 +74,32 @@ def login():
     else:
         # If login information is incorrect, return a 401 Unauthorized error
         abort(401)
+
+
+@app.route("/sessions", methods=["DELETE"])
+def logout():
+    """
+    Handle DELETE requests to /sessions to log out a user.
+
+    Expects session ID as a cookie with key "session_id".
+
+    Returns:
+        Response: A redirect response to GET / or
+                    a JSON response indicating failure.
+    """
+    # Get session ID from cookie
+    session_id = request.cookies.get("session_id")
+
+    # Find user with the requested session ID
+    user = AUTH.get_user_from_session_id(session_id)
+    if user:
+        # If user exists, destroy the session
+        AUTH.destroy_session(user.id)
+        # Redirect user to GET /
+        return redirect("/")
+    else:
+        # If user does not exist, respond with a 403 Forbidden error
+        abort(403)
 
 
 if __name__ == "__main__":
