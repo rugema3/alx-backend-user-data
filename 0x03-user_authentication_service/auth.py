@@ -45,22 +45,10 @@ class Auth:
         Raises:
             ValueError: If a user already exists with the provided email.
         """
-        # Check if a user with the provided email already exists
         try:
-            existing_user = self._db.find_user_by(email=email)
-            raise ValueError(f"User {email} already exists.")
+            self._db.find_user_by(email=email)
         except NoResultFound:
-            # If user does not exist, proceed to register the new user
-            pass
-
-        # Hash the password using the _hash_password method
-        hashed_password = _hash_password(password)
-
-        # Add the new user to the database
-        new_user = self._db.add_user(
-            email=email,
-            hashed_password=hashed_password
-            )
-
-        # Return the newly registered User object
-        return new_user
+            hashed = _hash_password(password)
+            new_user = self._db.add_user(email, hashed)
+            return new_user
+        raise ValueError(f"User {email} already exists")
