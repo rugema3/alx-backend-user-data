@@ -76,7 +76,7 @@ def login():
         abort(401)
 
 
-@app.route("/sessions", methods=["DELETE"])
+@app.route("/sessions", methods=["DELETE"], strict_slashes=False)
 def logout():
     """
     Handle DELETE requests to /sessions to log out a user.
