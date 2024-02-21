@@ -61,10 +61,33 @@ class DB:
             InvalidRequestError: If the query is invalid.
         """
         users = self._session.query(User)
-        for k, v in kwargs.items():
-            if k not in User.__dict__:
+        for key, value in kwargs.items():
+            if key not in User.__dict__:
                 raise InvalidRequestError
             for usr in users:
-                if getattr(usr, k) == v:
+                if getattr(usr, key) == value:
                     return usr
         raise NoResultFound
+
+    def update_user(self, user_id: int, **kwargs) -> None:
+        """Update a user in the database based on input arguments
+
+        Args:
+            user_id (int): The ID of the user to update.
+            **kwargs: Arbitrary keyword arguments as
+                        updates for the user attributes.
+
+        Raises:
+            ValueError: If an argument that does not correspond to a
+                        user attribute is passed.
+        """
+        try:
+            user = self.find_user_by(id=user_id)
+            for attr, value in kwargs.items():
+                if hasattr(User, attr):
+                    setattr(user, attr, value)
+                else:
+                    raise ValueError(f"Invalid attribute '{attr}' for user.")
+            self._session.commit()
+        except NoResultFound:
+            raise NoResultFound(f"No user found with ID {user_id}.")
