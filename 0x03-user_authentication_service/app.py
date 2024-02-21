@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Flask Application."""
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, abort, make_response
 from auth import Auth
 
 
@@ -42,6 +42,38 @@ def register_user():
     except ValueError as e:
         # Return error response if user already exists
         return jsonify({"message": "email already registered"}), 400
+
+
+@app.route("/sessions", methods=["POST"], strict_slashes=False)
+def login():
+    """
+    Handle POST requests to /sessions to log in a user.
+
+    Expects form data fields: "email" and "password".
+
+    Returns:
+        Response: A JSON response indicating success or failure.
+    """
+    email = request.form.get("email")
+    password = request.form.get("password")
+
+    # Check if login information is correct
+    if AUTH.valid_login(email, password):
+        # Create a new session for the user
+        session_id = AUTH.create_session(email)
+        if session_id:
+            # Set session ID as a cookie in the response
+            response = make_response(
+                    jsonify({"email": email, "message": "logged in"})
+                    )
+            response.set_cookie("session_id", session_id)
+            return response
+        else:
+            # If session ID couldn't be created, return an error
+            return jsonify({"message": "Unable to create session"}), 500
+    else:
+        # If login information is incorrect, return a 401 Unauthorized error
+        abort(401)
 
 
 if __name__ == "__main__":
