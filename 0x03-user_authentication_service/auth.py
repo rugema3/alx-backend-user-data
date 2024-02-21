@@ -5,6 +5,7 @@ from db import DB
 from user import User
 from sqlalchemy.orm.exc import NoResultFound
 from typing import (TypeVar, Union)
+import uuid
 
 
 def _hash_password(password: str) -> bytes:
@@ -24,6 +25,15 @@ def _hash_password(password: str) -> bytes:
 
     # Return the salted hash of the input password
     return hashed_password
+
+
+def _generate_uuid() -> str:
+    """Generate a new UUID
+
+    Returns:
+        str: A string representation of the generated UUID.
+    """
+    return str(uuid.uuid4())
 
 
 class Auth:
